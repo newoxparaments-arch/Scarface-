@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SCARFACE | Cyber Investigation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap');
+:root{
+  --red:#e50000;--red2:#ff3333;--dark:#050508;--dark2:#0a0a10;
+  --panel:#0f0f1a;--border:#1e1e30;--border2:#2a0000;
+  --text:#c8c8d8;--text2:#777788;--glow:0 0 20px #e5000099,0 0 50px #e5000033;
+  --glow2:0 0 10px #e5000066;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;min-height:100vh;overflow-x:hidden;}
+
+/* SCANLINES */
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,rgba(0,0,0,0.15) 3px,rgba(0,0,0,0.15) 4px);pointer-events:none;z-index:9999;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;height:62px;background:rgba(5,5,8,.97);border-bottom:1px solid #2a0000;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:1000;backdrop-filter:blur(12px);}
+.logo{font-family:'Orbitron',monospace;font-size:1.2rem;font-weight:900;color:#fff;letter-spacing:4px;display:flex;align-items:center;gap:10px;}
+.logo-hex{width:34px;height:34px;background:var(--red);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:900;animation:pulse 2s ease-in-out infinite;}
+.logo span{color:var(--red);text-shadow:var(--glow2);}
+@keyframes pulse{0%,100%{box-shadow:var(--glow)}50%{box-shadow:0 0 35px #e50000cc,0 0 70px #e5000044}}
+nav ul{list-style:none;display:flex;gap:4px;}
+nav ul li a{color:var(--text2);text-decoration:none;font-family:'Orbitron',monospace;font-size:.62rem;letter-spacing:2px;text-transform:uppercase;padding:7px 12px;border:1px solid transparent;border-radius:2px;transition:.2s;}
+nav ul li a:hover,nav ul li a.active{color:var(--red2);border-color:var(--red);text-shadow:0 0 8px var(--red);background:rgba(229,0,0,.08);}
+.nav-online{display:flex;align-items:center;gap:7px;font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--text2);}
+.dot-live{width:8px;height:8px;border-radius:50%;background:#00ff88;animation:blink 1.4s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+
+/* SECTIONS */
+section{display:none;padding:90px 20px 60px;min-height:100vh;}
+section.active{display:block;}
+#home.active{display:flex;align-items:center;justify-content:center;}
+
+/* HERO */
+#home{text-align:center;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(229,0,0,.13) 0%,transparent 65%),linear-gradient(180deg,#050508 0%,#0a000a 50%,#050508 100%);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(229,0,0,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(229,0,0,.04) 1px,transparent 1px);background-size:50px 50px;animation:gridM 20s linear infinite;}
+@keyframes gridM{from{transform:translate(0,0)}to{transform:translate(50px,50px)}}
+.hero-c{position:relative;z-index:2;}
+.hero-badge{display:inline-block;background:rgba(229,0,0,.1);border:1px solid rgba(229,0,0,.35);color:var(--red2);font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:4px;padding:5px 16px;margin-bottom:22px;}
+h1.ht{font-family:'Orbitron',monospace;font-size:clamp(3rem,8vw,6.5rem);font-weight:900;line-height:1;letter-spacing:8px;color:#fff;text-shadow:var(--glow);margin-bottom:8px;}
+h1.ht span{color:var(--red);}
+.hero-sub{font-family:'Share Tech Mono',monospace;color:var(--red2);font-size:.9rem;letter-spacing:6px;margin-bottom:22px;opacity:.8;}
+.hero-desc{max-width:600px;margin:0 auto 36px;color:var(--text2);font-size:1rem;line-height:1.7;}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.btn{font-family:'Orbitron',monospace;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;padding:11px 26px;text-decoration:none;border:1px solid;border-radius:2px;cursor:pointer;transition:.25s;display:inline-flex;align-items:center;gap:8px;background:none;}
+.btn-p{background:var(--red)!important;border-color:var(--red);color:#fff;box-shadow:var(--glow2);}
+.btn-p:hover{background:var(--red2)!important;box-shadow:var(--glow);transform:translateY(-2px);}
+.btn-o{border-color:var(--border);color:var(--text2);}
+.btn-o:hover{border-color:var(--red);color:var(--red);background:rgba(229,0,0,.07)!important;transform:translateY(-2px);}
+.hero-stats{display:flex;gap:36px;justify-content:center;flex-wrap:wrap;margin-top:56px;padding-top:36px;border-top:1px solid var(--border);}
+.stat .sn{font-family:'Orbitron',monospace;font-size:1.9rem;font-weight:900;color:var(--red);text-shadow:var(--glow2);}
+.stat .sl{font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:2px;color:var(--text2);margin-top:3px;}
+
+/* SECTION HEADERS */
+.sec-hdr{text-align:center;margin-bottom:56px;}
+.sec-tag{font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:4px;color:var(--red);text-transform:uppercase;margin-bottom:10px;display:block;}
+.sec-title{font-family:'Orbitron',monospace;font-size:clamp(1.7rem,4vw,2.6rem);font-weight:900;color:#fff;text-shadow:var(--glow2);margin-bottom:10px;}
+.sec-desc{color:var(--text2);max-width:540px;margin:0 auto;line-height:1.7;}
+
+/* CARDS GRID */
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px;max-width:1100px;margin:0 auto;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:28px 24px;transition:.3s;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);opacity:0;transition:.3s;}
+.card:hover{border-color:rgba(229,0,0,.35);transform:translateY(-4px);box-shadow:0 8px 28px rgba(229,0,0,.1);}
+.card:hover::before{opacity:1;}
+.card-icon{width:48px;height:48px;background:rgba(229,0,0,.09);border:1px solid rgba(229,0,0,.2);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:18px;}
+.card-name{font-family:'Orbitron',monospace;font-size:.82rem;font-weight:700;color:#fff;letter-spacing:1px;margin-bottom:9px;}
+.card-desc{color:var(--text2);font-size:.93rem;line-height:1.6;}
+
+/* MEMBERS */
+.members-wrap{max-width:1100px;margin:0 auto;}
+.mlabel{font-family:'Orbitron',monospace;font-size:.68rem;letter-spacing:4px;color:var(--red);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;}
+.mlabel::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,#2a0000,transparent);}
+.owners-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-bottom:40px;}
+.owner-card{background:var(--panel);border:1px solid rgba(229,0,0,.3);border-radius:4px;padding:28px;text-align:center;position:relative;overflow:hidden;transition:.3s;}
+.owner-card:hover{box-shadow:var(--glow);}
+.owner-card::after{content:'OWNER';position:absolute;top:10px;right:10px;font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:2px;background:var(--red);color:#fff;padding:2px 7px;border-radius:2px;}
+.avatar{width:80px;height:80px;border-radius:50%;border:2px solid var(--red);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:900;color:var(--red);background:rgba(229,0,0,.07);text-shadow:var(--glow2);animation:pulse 3s ease-in-out infinite;}
+.mem-name{font-family:'Orbitron',monospace;font-size:.95rem;font-weight:700;color:#fff;letter-spacing:2px;margin-bottom:5px;}
+.mem-role{font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:2px;color:var(--red2);margin-bottom:11px;}
+.tags{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;}
+.tag{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:1px;background:rgba(229,0,0,.09);border:1px solid rgba(229,0,0,.18);color:var(--text2);padding:2px 7px;border-radius:2px;}
+.mems-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;}
+.mem-card{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:22px 18px;text-align:center;transition:.3s;}
+.mem-card:hover{border-color:rgba(229,0,0,.28);transform:translateY(-3px);box-shadow:0 6px 20px rgba(229,0,0,.07);}
+.mem-card .avatar{width:62px;height:62px;font-size:1rem;animation:none;}
+.mem-card:hover .avatar{animation:pulse 2s ease-in-out infinite;}
+
+/* OPSEC */
+.opsec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px;max-width:1100px;margin:0 auto;}
+.oc{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:28px;transition:.3s;}
+.oc:hover{border-color:rgba(229,0,0,.25);transform:translateY(-3px);}
+.on{font-family:'Orbitron',monospace;font-size:2.4rem;font-weight:900;color:rgba(229,0,0,.13);line-height:1;margin-bottom:10px;}
+.ot{font-family:'Orbitron',monospace;font-size:.82rem;letter-spacing:2px;color:var(--red2);margin-bottom:9px;}
+.od{color:var(--text2);font-size:.93rem;line-height:1.65;}
+.ol{list-style:none;margin-top:9px;}
+.ol li{padding:3px 0;color:var(--text2);font-size:.88rem;display:flex;gap:7px;align-items:flex-start;}
+.ol li::before{content:'▶';color:var(--red);font-size:.55rem;margin-top:5px;flex-shrink:0;}
+
+/* REPORT */
+.rep-wrap{max-width:800px;margin:0 auto;}
+.form-card{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:38px;position:relative;overflow:hidden;}
+.form-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);}
+.rep-warn{background:rgba(229,0,0,.07);border:1px solid rgba(229,0,0,.22);border-radius:3px;padding:13px 16px;margin-bottom:26px;font-family:'Share Tech Mono',monospace;font-size:.77rem;color:var(--red2);}
+.fg{margin-bottom:18px;}
+.fl{display:block;font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:7px;}
+.fc{width:100%;background:#06060e;border:1px solid var(--border);border-radius:2px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:1rem;padding:11px 15px;outline:none;transition:.2s;}
+.fc:focus{border-color:var(--red);box-shadow:0 0 0 2px rgba(229,0,0,.1);}
+select.fc option{background:#06060e;}
+textarea.fc{resize:vertical;min-height:110px;}
+.rid{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:2px;background:rgba(0,255,136,.07);border:1px solid rgba(0,255,136,.18);color:#00ff88;padding:4px 11px;border-radius:2px;margin-bottom:26px;}
+.rlog{margin-top:38px;}
+.rlog-title{font-family:'Orbitron',monospace;font-size:.75rem;letter-spacing:2px;color:var(--text2);margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--border);}
+.li{background:#06060e;border:1px solid var(--border);border-left:3px solid var(--red);border-radius:2px;padding:13px 16px;margin-bottom:9px;font-family:'Share Tech Mono',monospace;font-size:.73rem;}
+.li-h{display:flex;justify-content:space-between;color:var(--text2);margin-bottom:5px;}
+.li-b{color:var(--text);line-height:1.5;}
+.badge{font-size:.58rem;padding:2px 7px;border-radius:2px;letter-spacing:1px;}
+.bp{background:rgba(255,180,0,.1);border:1px solid rgba(255,180,0,.28);color:#ffb400;}
+.br{background:rgba(0,255,136,.07);border:1px solid rgba(0,255,136,.18);color:#00ff88;}
+.ba{background:rgba(229,0,0,.09);border:1px solid rgba(229,0,0,.28);color:var(--red2);}
+
+/* ADMIN */
+.adm-login{max-width:420px;margin:0 auto;background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:46px 38px;text-align:center;position:relative;overflow:hidden;}
+.adm-login::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--red),transparent);}
+.adm-icon{width:68px;height:68px;border-radius:50%;background:rgba(229,0,0,.09);border:2px solid rgba(229,0,0,.28);display:flex;align-items:center;justify-content:center;font-size:1.9rem;margin:0 auto 22px;animation:pulse 2.5s ease-in-out infinite;}
+.adm-t{font-family:'Orbitron',monospace;font-size:.95rem;letter-spacing:3px;color:#fff;margin-bottom:5px;}
+.adm-s{font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--text2);letter-spacing:2px;margin-bottom:30px;}
+.lerr{background:rgba(229,0,0,.09);border:1px solid rgba(229,0,0,.28);color:var(--red2);font-family:'Share Tech Mono',monospace;font-size:.73rem;padding:9px;border-radius:2px;margin-bottom:14px;display:none;}
+.adm-panel{display:none;max-width:1100px;margin:0 auto;}
+.adm-hdr{display:flex;align-items:center;justify-content:space-between;background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:16px 26px;margin-bottom:22px;}
+.adm-user{display:flex;align-items:center;gap:10px;font-family:'Orbitron',monospace;font-size:.78rem;color:#fff;}
+.udot{width:10px;height:10px;border-radius:50%;background:var(--red);animation:pulse 1.5s ease-in-out infinite;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:22px;}
+.sc{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:20px 22px;display:flex;align-items:center;gap:14px;}
+.si{width:42px;height:42px;background:rgba(229,0,0,.09);border:1px solid rgba(229,0,0,.18);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.sn2{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;color:var(--red);}
+.sl2{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:1.5px;color:var(--text2);}
+.atabs{display:flex;gap:7px;margin-bottom:18px;}
+.atab{font-family:'Share Tech Mono',monospace;font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;padding:6px 13px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;border-radius:2px;transition:.2s;}
+.atab:hover,.atab.at{border-color:var(--red);color:var(--red2);background:rgba(229,0,0,.07);}
+.asec{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:26px;margin-bottom:18px;}
+.asec-t{font-family:'Orbitron',monospace;font-size:.75rem;letter-spacing:2px;color:#fff;margin-bottom:18px;padding-bottom:11px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;}
+.asec-t span{color:var(--red);}
+table.rt{width:100%;border-collapse:collapse;}
+table.rt th{font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--text2);text-align:left;padding:9px 13px;border-bottom:1px solid var(--border);}
+table.rt td{padding:11px 13px;border-bottom:1px solid rgba(30,30,48,.5);font-size:.88rem;color:var(--text);}
+table.rt tr:hover td{background:rgba(229,0,0,.03);}
+.ab{font-family:'Share Tech Mono',monospace;font-size:.6rem;letter-spacing:1px;padding:3px 9px;border:1px solid;border-radius:2px;cursor:pointer;transition:.2s;background:transparent;margin-right:5px;}
+.ab:hover{opacity:.75;}
+.ab.res{border-color:rgba(0,255,136,.28);color:#00ff88;}
+.ab.rev{border-color:rgba(229,0,0,.28);color:var(--red2);}
+.ab.del{border-color:rgba(255,80,80,.28);color:#ff5555;}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:11px;}
+.mc2{background:#06060e;border:1px solid var(--border);border-radius:3px;padding:15px;text-align:center;position:relative;}
+.mc2 .mbadge{position:absolute;top:7px;right:7px;font-family:'Share Tech Mono',monospace;font-size:.53rem;letter-spacing:1px;padding:2px 6px;border-radius:2px;}
+.mo{background:rgba(229,0,0,.18);border:1px solid rgba(229,0,0,.38);color:var(--red2);}
+.mm{background:rgba(100,100,150,.1);border:1px solid rgba(100,100,150,.18);color:#8888aa;}
+.mc2 .mname{font-family:'Orbitron',monospace;font-size:.72rem;letter-spacing:1px;color:#fff;margin-top:9px;}
+.alog-item{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--text2);padding:9px 0;border-bottom:1px solid rgba(30,30,48,.5);display:flex;align-items:center;gap:9px;}
+.alog-item .d{width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0;}
+
+/* FOOTER */
+footer{border-top:1px solid #1a0000;padding:28px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--text2);letter-spacing:1px;}
+footer strong{color:var(--red);}
+
+/* TOAST */
+#toast{position:fixed;bottom:28px;right:28px;background:var(--panel);border:1px solid rgba(0,255,136,.28);border-radius:4px;padding:13px 20px;font-family:'Share Tech Mono',monospace;font-size:.78rem;color:#00ff88;z-index:9000;transform:translateY(70px);opacity:0;transition:.3s;max-width:310px;}
+#toast.show{transform:translateY(0);opacity:1;}
+
+@media(max-width:720px){
+  nav ul li a{font-size:.5rem;padding:5px 7px;letter-spacing:1px;}
+  .logo{font-size:1rem;}
+  .form-card,.adm-login{padding:24px 16px;}
+  .asec{padding:16px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-hex">S</div>
+    SCAR<span>FACE</span>
+  </div>
+  <ul>
+    <li><a href="#" onclick="go('home');return false" id="nav-home" class="active">Home</a></li>
+    <li><a href="#" onclick="go('services');return false" id="nav-services">Serviços</a></li>
+    <li><a href="#" onclick="go('opsec');return false" id="nav-opsec">OPSEC</a></li>
+    <li><a href="#" onclick="go('members');return false" id="nav-members">Membros</a></li>
+    <li><a href="#" onclick="go('report');return false" id="nav-report">Denúncias</a></li>
+    <li><a href="#" onclick="go('admin');return false" id="nav-admin">Admin</a></li>
+  </ul>
+  <div class="nav-online"><div class="dot-live"></div>ONLINE</div>
+</nav>
+
+<!-- HOME -->
+<section id="home" class="active">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-c">
+    <div class="hero-badge">🔴 OPERAÇÃO ATIVA — CYBER INVESTIGATION UNIT</div>
+    <h1 class="ht">SCAR<span>FACE</span></h1>
+    <div class="hero-sub">// CYBER INVESTIGATION &amp; OPSEC //</div>
+    <p class="hero-desc">Especialistas em investigação digital, OPSEC avançada, rastreamento de ameaças e exposição de alvos. Operamos nas sombras — com precisão absoluta.</p>
+    <div class="hero-btns">
+      <a href="#" class="btn btn-p" onclick="go('report');return false">⚠ Fazer Denúncia</a>
+      <a href="#" class="btn btn-o" onclick="go('members');return false">👥 Ver Membros</a>
+      <a href="#" class="btn btn-o" onclick="go('services');return false">🔍 Serviços</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="sn" id="c-ops">0</div><div class="sl">Operações</div></div>
+      <div class="stat"><div class="sn" id="c-tgt">0</div><div class="sl">Alvos Expostos</div></div>
+      <div class="stat"><div class="sn" id="c-mem">0</div><div class="sl">Membros Ativos</div></div>
+      <div class="stat"><div class="sn" id="c-rep">0</div><div class="sl">Denúncias</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="sec-hdr">
+    <span class="sec-tag">// Capacidades //</span>
+    <h2 class="sec-title">Serviços &amp; Operações</h2>
+    <p class="sec-desc">Arsenal completo de ferramentas e técnicas para investigação digital e operações OPSEC.</p>
+  </div>
+  <div class="grid-3">
+    <div class="card"><div class="card-icon">🔍</div><div class="card-name">Cyber Investigação</div><div class="card-desc">Rastreamento de identidades digitais, coleta de evidências online e análise forense. Encontramos o que outros não conseguem.</div></div>
+    <div class="card"><div class="card-icon">🛡️</div><div class="card-name">OPSEC Avançada</div><div class="card-desc">Consultoria em segurança operacional, anonimização de identidade, hardening de dispositivos e proteção contra rastreamento.</div></div>
+    <div class="card"><div class="card-icon">🕵️</div><div class="card-name">OSINT</div><div class="card-desc">Coleta de inteligência de fontes abertas. Perfis, redes sociais, registros públicos e correlação de dados para identificar alvos.</div></div>
+    <div class="card"><div class="card-icon">⚡</div><div class="card-name">Rastreamento de Ameaças</div><div class="card-desc">Monitoramento contínuo, identificação de atores maliciosos e exposição de operações adversárias em tempo real.</div></div>
+    <div class="card"><div class="card-icon">💻</div><div class="card-name">Análise Forense Digital</div><div class="card-desc">Recuperação de dados, análise de logs, identificação de rastros digitais e documentação de evidências.</div></div>
+    <div class="card"><div class="card-icon">📡</div><div class="card-name">Contra-Inteligência</div><div class="card-desc">Identificação de infiltradores, detecção de espionagem digital e operações de desinformação controlada.</div></div>
+    <div class="card"><div class="card-icon">🔒</div><div class="card-name">Criptografia &amp; Anonimato</div><div class="card-desc">Implementação de protocolos de comunicação segura, redes privadas e técnicas avançadas de anonimização.</div></div>
+    <div class="card"><div class="card-icon">📋</div><div class="card-name">Relatórios de Inteligência</div><div class="card-desc">Dossiês completos com dados coletados, análise de padrões de comportamento e relatórios executivos detalhados.</div></div>
+    <div class="card"><div class="card-icon">⚠️</div><div class="card-name">Investigação de Golpes</div><div class="card-desc">Exposição de fraudes digitais, esquemas de golpe, scammers e criminosos online. Denúncias recebidas e investigadas.</div></div>
+  </div>
+</section>
+
+<!-- OPSEC -->
+<section id="opsec">
+  <div class="sec-hdr">
+    <span class="sec-tag">// Segurança Operacional //</span>
+    <h2 class="sec-title">Guia OPSEC</h2>
+    <p class="sec-desc">Protocolos e boas práticas para manter anonimato e segurança operacional em ambientes digitais adversos.</p>
+  </div>
+  <div class="opsec-grid">
+    <div class="oc"><div class="on">01</div><div class="ot">IDENTIDADE DIGITAL</div><div class="od">Nunca utilize sua identidade real em operações sensíveis.</div><ul class="ol"><li>Separe contas pessoais de operacionais</li><li>Use emails descartáveis e temporários</li><li>Nunca reutilize usernames entre plataformas</li><li>Personas separadas para cada contexto</li><li>Cuidado com metadados em arquivos enviados</li></ul></div>
+    <div class="oc"><div class="on">02</div><div class="ot">ANONIMIZAÇÃO DE REDE</div><div class="od">Seu IP é sua identidade — proteja-o em todos os momentos.</div><ul class="ol"><li>Sempre utilize VPN confiável de no-log</li><li>Tor Browser para operações críticas</li><li>Evite WebRTC leaks em navegadores</li><li>DNS over HTTPS para consultas seguras</li><li>Nunca acesse contas pessoais via Tor op.</li></ul></div>
+    <div class="oc"><div class="on">03</div><div class="ot">COMUNICAÇÃO SEGURA</div><div class="od">Assuma sempre que qualquer canal pode estar comprometido.</div><ul class="ol"><li>Use comunicação E2E (Signal, Session)</li><li>Evite Discord para assuntos sensíveis</li><li>Mensagens autodestrutivas quando possível</li><li>Nunca compartilhe localização real</li><li>Verifique fingerprints de contatos</li></ul></div>
+    <div class="oc"><div class="on">04</div><div class="ot">DISPOSITIVOS &amp; HARDWARE</div><div class="od">Seu dispositivo é a primeira linha de defesa e ataque.</div><ul class="ol"><li>Use SOs focados em privacidade</li><li>Whonix ou Tails para operações críticas</li><li>Câmera e microfone cobertos quando não usados</li><li>Full disk encryption obrigatória</li><li>Evite dispositivos de segunda mão sem formatação</li></ul></div>
+    <div class="oc"><div class="on">05</div><div class="ot">COLETA DE OSINT</div><div class="od">Seja invisível enquanto coleta informações sobre alvos.</div><ul class="ol"><li>Nunca acesse perfil do alvo logado</li><li>Use conta limpa ou modo anônimo</li><li>Salve cópias (screenshots + archive.ph)</li><li>Correlacione dados de múltiplas fontes</li><li>Documente timestamps e fontes de cada dado</li></ul></div>
+    <div class="oc"><div class="on">06</div><div class="ot">CONTRAINTELIGÊNCIA</div><div class="od">Proteja operações de infiltradores e agentes adversos.</div><ul class="ol"><li>Compartimentalize informações por necessidade</li><li>Nunca discuta operações em canais abertos</li><li>Verifique identidade de novos membros</li><li>Use honeypots para detectar vazamentos</li><li>Plano de contingência para comprometimentos</li></ul></div>
+  </div>
+</section>
+
+<!-- MEMBERS -->
+<section id="members">
+  <div class="sec-hdr">
+    <span class="sec-tag">// Equipe //</span>
+    <h2 class="sec-title">Nossa Equipe</h2>
+    <p class="sec-desc">Os operadores por trás da Scarface. Unidos por um objetivo: expor e investigar.</p>
+  </div>
+  <div class="members-wrap">
+    <div class="mlabel" style="margin-bottom:18px;">Fundadores &amp; Donos</div>
+    <div class="owners-grid">
+      <div class="owner-card">
+        <div class="avatar">NX</div>
+        <div class="mem-name">NEWOX</div>
+        <div class="mem-role">Co-Fundador • Head de Operações</div><p><strong>Qual seria o meu destino nesse mundo?</strong></p>
+        <div class="tags"><span class="tag">OPSEC</span><span class="tag">Investigação</span><span class="tag">Estratégia</span><span class="tag">Admin</span></div>
+      </div>
+       <div class="owners-grid">
+      <div class="owner-card">
+        <div class="avatar">NX</div>
+        <div class="mem-name">YUSK</div>
+        <div class="mem-role">Co-Fundador • Head de Operações</div>
+        <div class="tags"><span class="tag">OPSEC</span><span class="tag">Investigação</span><span class="tag">Estratégia</span><span class="tag">Admin</span></div>
+      </div>
+    <div class="mlabel">Membros Operacionais</div>
+    <div class="mems-grid">
+      <div class="mem-card"><div class="avatar" style="width:62px;height:62px;font-size:1rem;animation:none;">WK</div><div class="mem-name">WALKER</div><div class="mem-role">Analista OSINT</div><div class="tags"><span class="tag">OSINT</span><span class="tag">Rastreio</span></div></div>
+      <div class="mem-card"><div class="avatar" style="width:62px;height:62px;font-size:1rem;animation:none;">CL</div><div class="mem-name">CALUSH</div><div class="mem-role">Especialista em Ameaças</div><div class="tags"><span class="tag">Threat Intel</span><span class="tag">Análise</span></div></div>
+      <div class="mem-card"><div class="avatar" style="width:62px;height:62px;font-size:1rem;animation:none;">PL</div><div class="mem-name">POLAR</div><div class="mem-role">Operador de Campo</div><div class="tags"><span class="tag">Operações</span><span class="tag">Forense</span></div></div>
+      <div class="mem-card"><div class="avatar" style="width:62px;height:62px;font-size:1rem;animation:none;">UR</div><div class="mem-name">URIEL</div><div class="mem-role">Analista de Inteligência</div><div class="tags"><span class="tag">Intel</span><span class="tag">OPSEC</span></div></div>
+      <div class="mem-card"><div class="avatar" style="width:62px;height:62px;font-size:1rem;animation:none;">YS</div><div class="mem-name">YOSHI</div><div class="mem-role">Especialista Técnico</div><div class="tags"><span class="tag">Técnico</span><span class="tag">Segurança</span></div></div>
+      <div class="mem-card"><div class="avatar" style="width:62px;height:62px;font-size:1rem;animation:none;">SN</div><div class="mem-name">SNUCRE</div><div class="mem-role">Investigador Digital</div><div class="tags"><span class="tag">Investigação</span><span class="tag">OSINT</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- REPORT -->
+<section id="report">
+  <div class="sec-hdr">
+    <span class="sec-tag">// Canal Oficial //</span>
+    <h2 class="sec-title">Fazer Denúncia</h2>
+    <p class="sec-desc">Reporte atividades suspeitas, golpes, ameaças digitais ou qualquer comportamento malicioso online.</p>
+  </div>
+  <div class="rep-wrap">
+    <div class="form-card">
+      <div class="rid" id="rid">[ ID: GERANDO... ]</div>
+      <div class="rep-warn">⚠ Suas informações são tratadas com total sigilo. A Scarface investiga todas as denúncias recebidas com seriedade.</div>
+      <form id="rForm" onsubmit="sendReport(event)">
+        <div class="fg"><label class="fl">Seu Nickname (Opcional)</label><input class="fc" type="text" id="r-nick" placeholder="Anônimo"/></div>
+        <div class="fg"><label class="fl">Categoria *</label>
+          <select class="fc" id="r-cat" required>
+            <option value="">— Selecione —</option>
+            <option value="Golpe / Scam">Golpe / Scam</option>
+            <option value="Doxxing">Doxxing / Vazamento de dados</option>
+            <option value="Ameaça / Extorsão">Ameaça / Extorsão</option>
+            <option value="Conteúdo Ilegal">Conteúdo Ilegal / Pedofilia</option>
+            <option value="Fraude Online">Fraude Online</option>
+            <option value="Ataque / Invasão">Ataque / Invasão</option>
+            <option value="Impersonação">Conta Falsa / Impersonação</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Plataforma *</label><input class="fc" type="text" id="r-plat" placeholder="Ex: Discord, Instagram, WhatsApp..." required/></div>
+        <div class="fg"><label class="fl">Identificação do Alvo</label><input class="fc" type="text" id="r-tgt" placeholder="Ex: @usuario123, link do perfil, IP..."/></div>
+        <div class="fg"><label class="fl">Descrição Completa *</label><textarea class="fc" id="r-desc" placeholder="Descreva o ocorrido com o máximo de detalhes. Inclua datas, evidências, links..." required></textarea></div>
+        <div class="fg"><label class="fl">Evidências (links, prints, etc.)</label><textarea class="fc" id="r-proof" placeholder="Cole aqui links de prints, arquivos, perfis..." style="min-height:75px;"></textarea></div>
+        <div class="fg"><label class="fl">Urgência</label>
+          <select class="fc" id="r-pri">
+            <option value="Baixa">Baixa — pode aguardar</option>
+            <option value="Média" selected>Média — investigar em breve</option>
+            <option value="Alta">Alta — situação grave</option>
+            <option value="Crítica">Crítica — ameaça imediata</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-p" style="width:100%;justify-content:center;">▶ ENVIAR DENÚNCIA</button>
+      </form>
+    </div>
+    <div class="rlog">
+      <div class="rlog-title">// LOG DE DENÚNCIAS RECENTES</div>
+      <div id="rlog-list">
+        <div class="li"><div class="li-h"><span>REP-00042 • Golpe • Discord</span><span class="badge br">RESOLVIDO</span></div><div class="li-b">Usuário aplicando golpe de nitro falso em múltiplas vítimas. Alvo identificado e exposto pela equipe.</div></div>
+        <div class="li"><div class="li-h"><span>REP-00078 • Ameaça • Instagram</span><span class="badge ba">EM ANÁLISE</span></div><div class="li-b">Perfil realizando ameaças e extorsão. Coleta de evidências em andamento.</div></div>
+        <div class="li"><div class="li-h"><span>REP-00085 • Fraude • WhatsApp</span><span class="badge bp">PENDENTE</span></div><div class="li-b">Golpe financeiro via WhatsApp — aguardando designação de operador.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ADMIN -->
+<section id="admin">
+  <div class="sec-hdr">
+    <span class="sec-tag">// Acesso Restrito //</span>
+    <h2 class="sec-title">Painel Administrativo</h2>
+    <p class="sec-desc">Área exclusiva para membros autorizados da Scarface.</p>
+  </div>
+
+  <div class="adm-login" id="aLogin">
+    <div class="adm-icon">🔐</div>
+    <div class="adm-t">AUTENTICAÇÃO</div>
+    <div class="adm-s">SCARFACE SECURE ACCESS SYSTEM</div>
+    <div class="lerr" id="lerr">⚠ Credenciais inválidas. Acesso negado.</div>
+    <form onsubmit="doLogin(event)">
+      <div class="fg" style="text-align:left;"><label class="fl">Usuário</label><input class="fc" type="text" id="au" placeholder="Username" autocomplete="off"/></div>
+      <div class="fg" style="text-align:left;"><label class="fl">Senha</label><input class="fc" type="password" id="ap" placeholder="••••••••" autocomplete="off"/></div>
+      <button type="submit" class="btn btn-p" style="width:100%;justify-content:center;margin-top:6px;">🔓 ACESSAR SISTEMA</button>
+    </form>
+  </div>
+
+  <div class="adm-panel" id="aPanel">
+    <div class="adm-hdr">
+      <div class="adm-user"><div class="udot"></div>NEWOX — ADMINISTRADOR</div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <span style="font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--text2);" id="aclk"></span>
+        <button class="btn btn-o" style="font-size:.58rem;padding:5px 12px;" onclick="doLogout()">⏻ SAIR</button>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="sc"><div class="si">📋</div><div><div class="sn2" id="at">0</div><div class="sl2">Total Denúncias</div></div></div>
+      <div class="sc"><div class="si">⏳</div><div><div class="sn2" id="ap2">0</div><div class="sl2">Pendentes</div></div></div>
+      <div class="sc"><div class="si">🔎</div><div><div class="sn2" id="ar">0</div><div class="sl2">Em Análise</div></div></div>
+      <div class="sc"><div class="si">✅</div><div><div class="sn2" id="ares">0</div><div class="sl2">Resolvidas</div></div></div>
+    </div>
+    <div class="atabs">
+      <button class="atab at" onclick="aTab('reports',this)">📋 Denúncias</button>
+      <button class="atab" onclick="aTab('members',this)">👥 Membros</button>
+      <button class="atab" onclick="aTab('activity',this)">📡 Atividade</button>
+    </div>
+    <div id="at-reports" class="asec">
+      <div class="asec-t">📋 <span>Gerenciar Denúncias</span></div>
+      <div style="overflow-x:auto;">
+        <table class="rt"><thead><tr><th>ID</th><th>Categoria</th><th>Plataforma</th><th>Urgência</th><th>Status</th><th>Data</th><th>Ações</th></tr></thead>
+        <tbody id="rtbody"><tr><td colspan="7" style="text-align:center;color:var(--text2);padding:28px;font-family:'Share Tech Mono',monospace;font-size:.72rem;">Nenhuma denúncia ainda.</td></tr></tbody></table>
+      </div>
+    </div>
+    <div id="at-members" class="asec" style="display:none;">
+      <div class="asec-t">👥 <span>Gestão de Membros</span></div>
+      <div class="mgrid">
+        <div class="mc2"><span class="mbadge mo">OWNER</span><div class="avatar" style="width:48px;height:48px;font-size:.85rem;margin:10px auto 0;">NX</div><div class="mname">NEWOX</div></div>
+        <div class="mc2"><span class="mbadge mo">OWNER</span><div class="avatar" style="width:48px;height:48px;font-size:.85rem;margin:10px auto 0;">YK</div><div class="mname">YUSK</div></div>
+        <div class="mc2"><span class="mbadge mm">MEMBRO</span><div class="avatar" style="width:48px;height:48px;font-size:.85rem;margin:10px auto 0;animation:none;">WK</div><div class="mname">WALKER</div></div>
+        <div class="mc2"><span class="mbadge mm">MEMBRO</span><div class="avatar" style="width:48px;height:48px;font-size:.85rem;margin:10px auto 0;animation:none;">CL</div><div class="mname">CALUSH</div></div>
+        <div class="mc2"><span class="mbadge mm">MEMBRO</span><div class="avatar" style="width:48px;height:48px;font-size:.85rem;margin:10px auto 0;animation:none;">PL</div><div class="mname">POLAR</div></div>
+        <div class="mc2"><span class="mbadge mm">MEMBRO</span><div class="avatar" style="width:48px;height:48px;font-size:.85rem;margin:10px auto 0;animation:none;">UR</div><div class="mname">URIEL</div></div>
+        <div class="mc2"><span class="mbadge mm">MEMBRO</span><div class="avatar" style="width:48px;height:48px;font-size:.85rem;margin:10px auto 0;animation:none;">YS</div><div class="mname">YOSHI</div></div>
+        <div class="mc2"><span class="mbadge mm">MEMBRO</span><div class="avatar" style="width:48px;height:48px;font-size:.85rem;margin:10px auto 0;animation:none;">SN</div><div class="mname">SNUCRE</div></div>
+      </div>
+    </div>
+    <div id="at-activity" class="asec" style="display:none;">
+      <div class="asec-t">📡 <span>Log de Atividades</span></div>
+      <div id="alog">
+        <div class="alog-item"><div class="d"></div>Sistema iniciado — SCARFACE ADMIN v2.4</div>
+        <div class="alog-item"><div class="d"></div>2 denúncias resolvidas pela equipe hoje</div>
+        <div class="alog-item"><div class="d"></div>Operação #247 concluída com sucesso</div>
+        <div class="alog-item"><div class="d"></div>Novo membro verificado e adicionado</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <strong>SCARFACE</strong> CYBER INVESTIGATION UNIT &copy; 2025<br>
+  <span style="margin-top:5px;display:block;">Fundado por <strong>NEWOX</strong> &amp; <strong>YUSK</strong> — Operamos nas sombras.</span>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+var reports = JSON.parse(localStorage.getItem('sf_reports') || '[]');
+var loggedIn = false;
+var curId = '';
+
+function genId(){return 'REP-'+String(Math.floor(Math.random()*90000)+10000);}
+function setRid(){curId=genId();document.getElementById('rid').textContent='[ ID: '+curId+' ]';}
+setRid();
+
+function go(id){
+  document.querySelectorAll('section').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('nav ul li a').forEach(function(a){a.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  if(id==='admin')renderAdmin();
+  window.scrollTo(0,0);
+}
+
+function sendReport(e){
+  e.preventDefault();
+  var r={id:curId,nick:document.getElementById('r-nick').value||'Anônimo',cat:document.getElementById('r-cat').value,plat:document.getElementById('r-plat').value,tgt:document.getElementById('r-tgt').value,desc:document.getElementById('r-desc').value,proof:document.getElementById('r-proof').value,pri:document.getElementById('r-pri').value,status:'pending',date:new Date().toLocaleDateString('pt-BR')};
+  reports.unshift(r);
+  localStorage.setItem('sf_reports',JSON.stringify(reports));
+  var li=document.createElement('div');li.className='li';
+  li.innerHTML='<div class="li-h"><span>'+r.id+' \u2022 '+r.cat+' \u2022 '+r.plat+'</span><span class="badge bp">PENDENTE</span></div><div class="li-b">'+r.desc.substring(0,120)+(r.desc.length>120?'...':'')+'</div>';
+  document.getElementById('rlog-list').prepend(li);
+  toast('\u2705 Denúncia '+r.id+' enviada com sucesso!');
+  document.getElementById('rForm').reset();
+  setRid();
+}
+
+function doLogin(e){
+  e.preventDefault();
+  var u=document.getElementById('au').value,p=document.getElementById('ap').value;
+  if(u==='newox'&&p==='admin'){
+    loggedIn=true;
+    document.getElementById('aLogin').style.display='none';
+    document.getElementById('aPanel').style.display='block';
+    renderAdmin();
+    startClock();
+    addLog('newox autenticado — '+new Date().toLocaleTimeString('pt-BR'));
+  } else {
+    var el=document.getElementById('lerr');el.style.display='block';setTimeout(function(){el.style.display='none';},3000);
+  }
+}
+function doLogout(){
+  loggedIn=false;
+  document.getElementById('aLogin').style.display='block';
+  document.getElementById('aPanel').style.display='none';
+  document.getElementById('au').value='';document.getElementById('ap').value='';
+}
+
+function aTab(t,btn){
+  ['reports','members','activity'].forEach(function(x){
+    var el=document.getElementById('at-'+x);if(el)el.style.display=x===t?'block':'none';
+  });
+  document.querySelectorAll('.atab').forEach(function(b){b.classList.remove('at');});
+  btn.classList.add('at');
+}
+
+function renderAdmin(){
+  if(!loggedIn)return;
+  var p=reports.filter(function(r){return r.status==='pending';}).length;
+  var rv=reports.filter(function(r){return r.status==='review';}).length;
+  var rs=reports.filter(function(r){return r.status==='resolved';}).length;
+  document.getElementById('at').textContent=reports.length;
+  document.getElementById('ap2').textContent=p;
+  document.getElementById('ar').textContent=rv;
+  document.getElementById('ares').textContent=rs;
+  var pc={Baixa:'#8888aa',Média:'#ffb400',Alta:'#ff6644',Crítica:'#ff2222'};
+  var tb=document.getElementById('rtbody');
+  if(!reports.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text2);padding:28px;font-family:\'Share Tech Mono\',monospace;font-size:.72rem;">Nenhuma denúncia ainda.</td></tr>';return;}
+  tb.innerHTML=reports.map(function(r,i){
+    var sb=r.status==='pending'?'<span class="badge bp">PENDENTE</span>':r.status==='review'?'<span class="badge ba">ANÁLISE</span>':'<span class="badge br">RESOLVIDO</span>';
+    return '<tr><td style="font-family:\'Share Tech Mono\',monospace;font-size:.7rem;color:var(--red2);">'+r.id+'</td><td>'+r.cat+'</td><td>'+r.plat+'</td><td style="color:'+(pc[r.pri]||'#fff')+';font-family:\'Share Tech Mono\',monospace;font-size:.7rem;">'+r.pri+'</td><td>'+sb+'</td><td style="font-family:\'Share Tech Mono\',monospace;font-size:.68rem;color:var(--text2);">'+r.date+'</td><td><button class="ab res" onclick="chSt('+i+',\'resolved\')">✓ Resolver</button><button class="ab rev" onclick="chSt('+i+',\'review\')">🔎 Análise</button><button class="ab del" onclick="delRep('+i+')">✕</button></td></tr>';
+  }).join('');
+}
+
+function chSt(i,s){reports[i].status=s;localStorage.setItem('sf_reports',JSON.stringify(reports));addLog('Status de '+reports[i].id+' → '+s.toUpperCase());renderAdmin();}
+function delRep(i){if(!confirm('Remover '+reports[i].id+'?'))return;addLog('Denúncia '+reports[i].id+' removida');reports.splice(i,1);localStorage.setItem('sf_reports',JSON.stringify(reports));renderAdmin();}
+function addLog(msg){var l=document.getElementById('alog');var el=document.createElement('div');el.className='alog-item';el.innerHTML='<div class="d"></div>'+msg;l.prepend(el);}
+function startClock(){setInterval(function(){var el=document.getElementById('aclk');if(el)el.textContent=new Date().toLocaleTimeString('pt-BR');},1000);}
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},4000);}
+
+// Counter animation
+function count(id,target,suffix){
+  var el=document.getElementById(id),n=parseInt(target),s=0,step=Math.ceil(n/55);
+  var t=setInterval(function(){s+=step;if(s>=n){s=n;clearInterval(t);}el.textContent=s+(suffix||'');},18);
+}
+window.addEventListener('load',function(){
+  setTimeout(function(){
+    count('c-ops',247);count('c-tgt',1300,'');count('c-mem',8);count('c-rep',89);
+    setTimeout(function(){document.getElementById('c-tgt').textContent='1.3K';},1200);
+  },500);
+});
+</script>
+</body>
+</html>
